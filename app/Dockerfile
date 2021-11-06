@@ -5,16 +5,17 @@ FROM node:alpine
 WORKDIR /usr/src/app
 
 # copy the package.json files from local machine to the workdir in container
-COPY package*.json ./
+COPY ./package*.json ./
 
 # run npm install in our local machine
-RUN npm install
+RUN npm install && npm run build
 
 # copy the generated modules and all other files to the container
 COPY . .
 
-# our app is running on port 5000 within the container, so need to expose it
-EXPOSE 5000
+FROM nginx:1.18-alpine
 
-# the command that starts our app
-CMD ["node", "index.js"]
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY dist /usr/share/nginx/html
+
+
